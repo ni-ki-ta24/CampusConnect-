@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Report Issue - CampusConnect+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header with College Photo Background -->
+<div class="dashboard-header-bg">
+    <div class="container py-5">
+    <h1><i class="fas fa-exclamation-triangle text-danger"></i> Report Campus Issue</h1>
+    <p class="text-muted">Help us improve the campus by reporting issues like water, cleanliness, hostel problems, etc.</p>
+    
+    <!-- Report Issue Form -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h4>Report a New Issue</h4>
+                    <hr>
+                    <form method="POST" action="{{ url_for('complaints') }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Issue Title</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Water leakage in Block A" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="water">Water Issue</option>
+                                <option value="cleanliness">Cleanliness</option>
+                                <option value="hostel">Hostel Issue</option>
+                                <option value="electricity">Electricity</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Describe the issue in detail..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-paper-plane"></i> Submit Issue
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5>Issue Categories</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-tint text-primary"></i> Water Issues</li>
+                        <li class="mb-2"><i class="fas fa-broom text-success"></i> Cleanliness</li>
+                        <li class="mb-2"><i class="fas fa-bed text-warning"></i> Hostel Issues</li>
+                        <li class="mb-2"><i class="fas fa-bolt text-warning"></i> Electricity</li>
+                        <li class="mb-2"><i class="fas fa-ellipsis-h text-muted"></i> Other</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reported Issues -->
+    <h3><i class="fas fa-list text-info"></i> Recent Issues</h3>
+    <div class="row">
+        {% for issue in issues %}
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-{{ 'success' if issue.status == 'resolved' else 'warning' }}">
+                            {{ issue.status|title }}
+                        </span>
+                        <small class="text-muted">{{ issue.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    <h5 class="card-title">{{ issue.title }}</h5>
+                    <p class="card-text">{{ issue.description }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="fas fa-tag"></i> {{ issue.category|title }}
+                        </small>
+                    </p>
+                    {% if current_user.is_authenticated and current_user.role in ['hod', 'dean', 'principal', 'admin'] %}
+                    {% if issue.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('resolve_complaint', issue_id=issue.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-check"></i> Mark as Resolved
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> Resolved</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-success text-center">
+                <i class="fas fa-check-circle"></i> No issues reported yet. Great!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+</div>
+{% endblock %}

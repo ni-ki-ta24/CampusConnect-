@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Departments - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 text-primary"><i class="fas fa-building"></i> Our Departments</h1>
+            <p class="lead text-muted">Explore our engineering departments</p>
+        </div>
+    </div>
+
+    <!-- Departments -->
+    <div class="row">
+        <!-- Original Departments -->
+        {% for dept in college.departments %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow border-0 dept-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="dept-icon me-3">
+                            <i class="fas fa-{{ dept.icon }} fa-3x text-info"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-title mb-0">{{ dept.name }}</h3>
+                            <span class="badge bg-primary">HOD: {{ dept.hod }}</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted">{{ dept.description }}</p>
+                    <div class="mt-3">
+                        <h6><i class="fas fa-graduation-cap"></i> Courses Offered:</h6>
+                        <ul class="list-unstyled">
+                            {% if dept.name == 'Computer Engineering' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Computer Engineering</li>
+                            {% elif dept.name == 'Mechanical Engineering' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Mechanical Engineering</li>
+                            {% elif dept.name == 'Electronics & Telecommunication' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Electronics & Telecommunication Engineering</li>
+                            {% elif dept.name == 'Electrical Engineering' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Electrical Engineering</li>
+                            {% elif dept.name == 'AI & Data Science' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. AI & Data Science</li>
+                            {% elif dept.name == 'AI & ML' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. AI & ML</li>
+                            {% elif dept.name == 'Applied Science (1st Year)' %}
+                            <li><i class="fas fa-check-circle text-success"></i> First Year Engineering</li>
+                            {% elif dept.name == 'CSE' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Computer Science Engineering</li>
+                            {% elif dept.name == 'VLSI' %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. VLSI Design</li>
+                            {% elif dept.name == 'BBA' %}
+                            <li><i class="fas fa-check-circle text-success"></i> Bachelor of Business Administration</li>
+                            {% elif dept.name == 'BCA' %}
+                            <li><i class="fas fa-check-circle text-success"></i> Bachelor of Computer Applications</li>
+                            {% else %}
+                            <li><i class="fas fa-check-circle text-success"></i> B.E. Engineering</li>
+                            {% endif %}
+                        </ul>
+                        {% if dept.intake %}
+                        <div class="mt-2">
+                            <span class="badge bg-success"><i class="fas fa-users"></i> Intake: {{ dept.intake }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <button class="btn btn-outline-primary btn-sm"><i class="fas fa-info-circle"></i> View Details</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Department Stats -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h2><i class="fas fa-building"></i> 11</h2>
+                            <p>Departments</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h2><i class="fas fa-users"></i> 1000+</h2>
+                            <p>Students</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h2><i class="fas fa-user-tie"></i> 50+</h2>
+                            <p>Faculty Members</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h2><i class="fas fa-flask"></i> 20+</h2>
+                            <p>Well-equipped Labs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dept-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dept-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.dept-icon {
+    transition: transform 0.3s ease;
+}
+
+.dept-card:hover .dept-icon {
+    transform: scale(1.1);
+}
+</style>
+{% endblock %}
+

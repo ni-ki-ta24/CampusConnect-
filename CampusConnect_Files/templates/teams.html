@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Teams - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1><i class="fas fa-users text-primary"></i> Teams</h1>
+    <p class="text-muted">Create teams and collaborate with other members.</p>
+
+    <!-- Create Team Section -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-plus-circle"></i> Create New Team</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('create_team') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Team Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter team name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="What is this team about?"></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_public" name="is_public" checked>
+                            <label class="form-check-label" for="is_public">Public Team (anyone can join)</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Team
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Teams Section -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-user-friends"></i> My Teams</h5>
+                </div>
+                <div class="card-body">
+                    {% if my_teams %}
+                    <div class="row">
+                        {% for team in my_teams %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ team.name }}</h5>
+                                    <p class="card-text text-muted">{{ team.description[:100] if team.description else 'No description' }}...</p>
+                                    <a href="{{ url_for('team_dashboard', team_id=team.id) }}" class="btn btn-sm btn-success">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <small class="text-muted">
+                                        <i class="fas fa-user"></i> {{ team.members|length }} members
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You haven't joined any teams yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- All Teams Section -->
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-globe"></i> All Teams</h5>
+                </div>
+                <div class="card-body">
+                    {% if all_teams %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Description</th>
+                                    <th>Members</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for team in all_teams %}
+                                <tr>
+                                    <td><strong>{{ team.name }}</strong></td>
+                                    <td>{{ team.description[:50] if team.description else 'N/A' }}...</td>
+                                    <td><span class="badge bg-primary">{{ team.members|length }}</span></td>
+                                    <td>{{ team.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('team_dashboard', team_id=team.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No teams available yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

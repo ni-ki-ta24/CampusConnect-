@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Notices - CampusConnect+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header with College Photo Background -->
+<div class="dashboard-header-bg">
+    <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-bullhorn text-primary"></i> Notices</h1>
+        {% if current_user.is_authenticated and current_user.role in ['faculty', 'admin'] %}
+        <a href="{{ url_for('new_notice') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Post Notice
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Category Filter -->
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('notices') }}" class="btn btn-outline-primary {{ 'active' if not request.args.get('category') else '' }}">
+                All
+            </a>
+            <a href="{{ url_for('notices', category='academic') }}" class="btn btn-outline-primary {{ 'active' if request.args.get('category') == 'academic' else '' }}">
+                Academic
+            </a>
+            <a href="{{ url_for('notices', category='event') }}" class="btn btn-outline-primary {{ 'active' if request.args.get('category') == 'event' else '' }}">
+                Event
+            </a>
+            <a href="{{ url_for('notices', category='general') }}" class="btn btn-outline-primary {{ 'active' if request.args.get('category') == 'general' else '' }}">
+                General
+            </a>
+            <a href="{{ url_for('notices', category='urgent') }}" class="btn btn-outline-danger {{ 'active' if request.args.get('category') == 'urgent' else '' }}">
+                Urgent
+            </a>
+        </div>
+    </div>
+    
+    <!-- Notices List -->
+    <div class="row">
+        {% for notice in notices %}
+        <div class="col-md-6 mb-4">
+            <div class="card notice-card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-{{ 'danger' if notice.category == 'urgent' else 'primary' }}">
+                            {{ notice.category|title }}
+                        </span>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> {{ notice.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                    <h5 class="card-title">{{ notice.title }}</h5>
+                    <p class="card-text">{{ notice.content }}</p>
+                    {% if notice.user %}
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Posted by {{ notice.user.username }}
+                        </small>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> No notices found.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+</div>
+{% endblock %}

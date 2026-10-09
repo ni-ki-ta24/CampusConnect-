@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Placements - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1><i class="fas fa-briefcase text-success"></i> Placements</h1>
+    <p class="text-muted">View and apply for placement opportunities.</p>
+
+    <!-- Add Placement Button (Faculty/Admin only) -->
+    {% if current_user.role in ['faculty', 'hod', 'dean', 'principal', 'admin'] %}
+    <div class="mb-4">
+        <a href="{{ url_for('new_placement') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add Placement
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Filter by Status -->
+    <div class="mb-4">
+        <div class="btn-group">
+            <a href="{{ url_for('placements') }}" class="btn btn-outline-primary">All</a>
+            <a href="{{ url_for('placements', status='upcoming') }}" class="btn btn-outline-primary">Upcoming</a>
+            <a href="{{ url_for('placements', status='ongoing') }}" class="btn btn-outline-primary">Ongoing</a>
+            <a href="{{ url_for('placements', status='completed') }}" class="btn btn-outline-primary">Completed</a>
+        </div>
+    </div>
+
+    <!-- Placements List -->
+    <div class="row">
+        {% for placement in placements %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-{{ 'success' if placement.status == 'completed' else 'warning' if placement.status == 'ongoing' else 'info' }}">
+                    <h5 class="mb-0 text-white">{{ placement.company_name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ placement.description }}</p>
+                    
+                    <div class="mb-2">
+                        <strong><i class="fas fa-money-bill text-success"></i> Package:</strong> 
+                        {{ placement.package or 'Not specified' }}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong><i class="fas fa-map-marker-alt text-danger"></i> Location:</strong> 
+                        {{ placement.location or 'Not specified' }}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong><i class="fas fa-graduation-cap text-primary"></i> Eligibility:</strong> 
+                        {{ placement.eligibility or 'All branches' }}
+                    </div>
+                    
+                    {% if placement.last_date %}
+                    <div class="mb-2">
+                        <strong><i class="fas fa-calendar text-warning"></i> Last Date:</strong> 
+                        {{ placement.last_date.strftime('%Y-%m-%d') }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <span class="badge bg-{{ 'success' if placement.status == 'completed' else 'warning' if placement.status == 'ongoing' else 'info' }}">
+                            {{ placement.status|title }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    {% if current_user.role == 'student' and placement.status != 'completed' %}
+                        {% set already_applied = false %}
+                        {% for app in my_applications %}
+                            {% if app.placement_id == placement.id %}
+                                {% set already_applied = true %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if already_applied %}
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-check"></i> Applied
+                        </button>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('apply_placement', placement_id=placement.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Apply Now
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% if current_user.role in ['faculty', 'hod', 'dean', 'principal', 'admin'] %}
+                    <a href="{{ url_for('placement_applications', placement_id=placement.id) }}" class="btn btn-info">
+                        <i class="fas fa-users"></i> View Applications
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">No placement opportunities available.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- My Applications (for students) -->
+    {% if current_user.role == 'student' and my_applications %}
+    <div class="mt-5">
+        <h3><i class="fas fa-user-check text-primary"></i> My Applications</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Package</th>
+                        <th>Status</th>
+                        <th>Applied Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in my_applications %}
+                    <tr>
+                        <td>{{ app.placement.company_name }}</td>
+                        <td>{{ app.placement.package or 'N/A' }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if app.status == 'selected' else 'warning' if app.status == 'shortlisted' else 'danger' if app.status == 'rejected' else 'info' }}">
+                                {{ app.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

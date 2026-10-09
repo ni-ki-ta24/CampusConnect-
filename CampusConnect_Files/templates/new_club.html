@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Create Club - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2><i class="fas fa-users text-warning"></i> Create New Club</h2>
+                    <hr>
+                    
+                    <form method="POST" action="{{ url_for('new_club') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Club Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">Create Club</button>
+                            <a href="{{ url_for('clubs') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

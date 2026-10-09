@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}College Info - CampusConnect+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with College Photo Background -->
+<div class="college-hero" style="background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.85) 100%), url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm4jRZHhndxjhE8SB-G3Jk_neowqXesHhDdw&s') center/cover;">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative py-5">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+                <div class="college-logo mb-3">
+                    <i class="fas fa-university fa-5x text-white"></i>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h1 class="display-4 text-white fw-bold">{{ college.name }}</h1>
+                <p class="lead text-white">{{ college.tagline }}</p>
+                <p class="text-white"><strong><i class="fas fa-calendar-alt"></i> Established:</strong> {{ college.established }}</p>
+                <p class="text-white"><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> Navi Mumbai, Maharashtra, India</p>
+                <p class="text-white"><strong><i class="fas fa-user-tie"></i> Principal:</strong> {{ college.principal }}</p>
+                <p class="text-white"><strong><i class="fas fa-globe"></i> Website:</strong> {{ college.website }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- Vision & Mission Section -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow border-0">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-eye"></i> Our Vision</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ college.vision }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fas fa-bullseye"></i> Our Mission</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ college.mission }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Principal's Message Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white">
+                    <h3><i class="fas fa-quote-left"></i> Principal's Message</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm4jRZHhndxjhE8SB-G3Jk_neowqXesHhDdw&s" alt="Principal" class="rounded-circle mb-3" style="border: 3px solid #28a745; width: 120px; height: 120px; object-fit: cover;">
+                            <h5 class="text-success">{{ college.principal }}</h5>
+                            <p class="text-muted">Principal</p>
+                        </div>
+                        <div class="col-md-9">
+                            <p class="lead"><em>"Welcome to ISBM College of Engineering, a premier institution committed to excellence in technical education. Our college has been at the forefront of producing competent engineers who have made their mark globally. We believe in holistic development of students through quality education, industry exposure, and extracurricular activities."</em></p>
+                            <p class="lead"><em>"Our faculty members are dedicated to nurturing young minds and preparing them for the challenges of the professional world. With state-of-the-art infrastructure, well-equipped laboratories, and strong industry connections, we ensure our students receive the best possible education."</em></p>
+                            <p class="text-muted">- {{ college.principal }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="fas fa-info-circle"></i> About Our College</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ college.about }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-building text-info"></i> Our Departments</h2>
+        </div>
+        {% for dept in college.departments %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm border-0 dept-card">
+                <div class="card-body text-center">
+                    <div class="dept-icon mb-3">
+                        <i class="fas fa-{{ dept.icon }} fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">{{ dept.name }}</h5>
+                    <p class="card-text text-muted">{{ dept.description }}</p>
+                    <div class="mt-2">
+                        <span class="badge bg-info">{{ dept.hod }}</span>
+                    </div>
+                    {% if dept.intake %}
+                    <div class="mt-2">
+                        <span class="badge bg-success"><i class="fas fa-users"></i> Intake: {{ dept.intake }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Courses Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-graduation-cap text-success"></i> Academic Programs</h2>
+        </div>
+        {% for course in college.courses %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm border-0 course-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                    <h5>{{ course.name }}</h5>
+                    <p class="card-text text-muted">
+                        <span class="badge bg-success">{{ course.duration }}</span>
+                        <span class="badge bg-warning">Intake: {{ course.intake }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Facilities Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-building-columns text-warning"></i> Campus Facilities</h2>
+        </div>
+        {% for facility in college.facilities %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm border-0 facility-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-{{ facility.icon }} fa-2x text-warning mb-2"></i>
+                    <h6>{{ facility.name }}</h6>
+                    <small class="text-muted">{{ facility.description }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Top Recruiters Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white">
+                    <h3><i class="fas fa-briefcase"></i> Top Recruiters</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        {% for recruiter in college.recruiters %}
+                        <div class="col-md-2 col-sm-3 col-4 mb-3">
+                            <div class="badge bg-light text-dark p-3">
+                                <i class="fas fa-building"></i> {{ recruiter }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-trophy text-danger"></i> Achievements & Accreditations</h2>
+        </div>
+        {% for achievement in college.achievements %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5><i class="fas fa-award text-danger"></i> {{ achievement.title }}</h5>
+                    <p class="card-text">{{ achievement.description }}</p>
+                    <small class="text-muted"><i class="fas fa-calendar"></i> {{ achievement.year }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Contact Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body">
+                    <h3><i class="fas fa-address-book text-info"></i> Contact Information</h3>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-university"></i> College Name:</strong> {{ college.name }}</p>
+                            <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ college.email }}</p>
+                            <p><strong><i class="fas fa-phone"></i> Phone:</strong> {{ college.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> {{ college.address }}</p>
+                            <p><strong><i class="fas fa-globe"></i> Website:</strong> {{ college.website }}</p>
+                            <p><strong><i class="fas fa-university"></i> Affiliation:</strong> University of Mumbai</p>
+                            <p><strong><i class="fas fa-check-circle"></i> Approval:</strong> AICTE, New Delhi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.college-hero {
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.college-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm4jRZHhndxjhE8SB-G3Jk_neowqXesHhDdw&s') center/cover;
+    opacity: 0.15;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 60, 114, 0.85);
+}
+
+.dept-card, .course-card, .facility-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dept-card:hover, .course-card:hover, .facility-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}
+

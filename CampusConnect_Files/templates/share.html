@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Give Access - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1><i class="fas fa-share-alt text-primary"></i> Give Access</h1>
+    <p class="text-muted">Share access to your account with other users or manage access you've been given.</p>
+
+    <div class="row mt-4">
+        <!-- Share My Access Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-user-plus"></i> Share My Access</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Give another user access to your account capabilities.</p>
+                    
+                    <form method="POST" action="{{ url_for('create_share') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">User Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter user's email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="access_level" class="form-label">Access Level</label>
+                            <select class="form-select" id="access_level" name="access_level">
+                                <option value="view">View Only - Can view your content</option>
+                                <option value="edit">Edit - Can view and make changes</option>
+                                <option value="full">Full Access - Complete access</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-share"></i> Give Access
+                        </button>
+                    </form>
+                </div>
+        </div>
+
+        <!-- Access I've Given Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-users"></i> Access I've Given</h5>
+                </div>
+                <div class="card-body">
+                    {% if my_shares %}
+                    <div class="list-group">
+                        {% for share in my_shares %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ share.shared_with.username }}</strong>
+                                <br><small class="text-muted">{{ share.shared_with.email }}</small>
+                                <br><span class="badge bg-{{ 'info' if share.access_level == 'view' else 'warning' if share.access_level == 'edit' else 'danger' }}">{{ share.access_level|title }} Access</span>
+                            </div>
+                            <form method="POST" action="{{ url_for('revoke_share', share_id=share.id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to revoke access?')">
+                                    <i class="fas fa-times"></i> Revoke
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You haven't given access to anyone yet.</p>
+                    {% endif %}
+                </div>
+        </div>
+
+    <!-- Access Shared With Me Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-handshake"></i> Access Shared With Me</h5>
+                </div>
+                <div class="card-body">
+                    {% if shared_with_me %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Owner</th>
+                                    <th>Email</th>
+                                    <th>Access Level</th>
+                                    <th>Shared Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for share in shared_with_me %}
+                                <tr>
+                                    <td><strong>{{ share.owner.username }}</strong></td>
+                                    <td>{{ share.owner.email }}</td>
+                                    <td><span class="badge bg-{{ 'info' if share.access_level == 'view' else 'warning' if share.access_level == 'edit' else 'danger' }}">{{ share.access_level|title }} Access</span></td>
+                                    <td>{{ share.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No access has been shared with you yet.</p>
+                    {% endif %}
+                </div>
+        </div>
+
+    <!-- Access Levels Info -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5><i class="fas fa-info-circle"></i> About Access Levels</h5>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-eye text-info"></i> View Only</h6>
+                            <p class="small text-muted">User can view your content and activities but cannot make any changes.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-edit text-warning"></i> Edit</h6>
+                            <p class="small text-muted">User can view and make changes to content on your behalf.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6><i class="fas fa-key text-danger"></i> Full Access</h6>
+                            <p class="small text-muted">User has complete access to all your account features and capabilities.</p>
+                        </div>
+                </div>
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team.name }} - Team Dashboard - CampusConnect+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Team Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-users text-primary"></i> {{ team.name }}</h1>
+            <p class="text-muted">{{ team.description }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if is_member %}
+                {% if membership.role == 'admin' %}
+                <span class="badge bg-success fs-6"><i class="fas fa-crown"></i> Admin</span>
+                {% else %}
+                <span class="badge bg-info fs-6"><i class="fas fa-user"></i> Member</span>
+                {% endif %}
+            {% else %}
+                {% if team.is_public %}
+                <form method="POST" action="{{ url_for('join_team', team_id=team.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Join Team
+                    </button>
+                </form>
+                {% else %}
+                <span class="badge bg-warning">Private Team</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Team Activity Feed -->
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-history"></i> Team Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if activities %}
+                    <div class="activity-feed">
+                        {% for activity in activities %}
+                        <div class="activity-item mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ activity.user.username }}</strong>
+                                    <span class="text-muted">{{ activity.details }}</span>
+                                </div>
+                                <small class="text-muted">{{ activity.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <small class="text-info">
+                                {% if activity.action == 'created_team' %}
+                                <i class="fas fa-plus-circle"></i> Created team
+                                {% elif activity.action == 'joined_team' %}
+                                <i class="fas fa-sign-in-alt"></i> Joined team
+                                {% elif activity.action == 'left_team' %}
+                                <i class="fas fa-sign-out-alt"></i> Left team
+                                {% elif activity.action == 'added_member' %}
+                                <i class="fas fa-user-plus"></i> Added member
+                                {% elif activity.action == 'removed_member' %}
+                                <i class="fas fa-user-minus"></i> Removed member
+                                {% elif activity.action == 'promoted_member' %}
+                                <i class="fas fa-arrow-up"></i> Promoted member
+                                {% elif activity.action == 'created_notice' %}
+                                <i class="fas fa-bullhorn"></i> Posted notice
+                                {% elif activity.action == 'created_event' %}
+                                <i class="fas fa-calendar-plus"></i> Created event
+                                {% elif activity.action == 'created_club' %}
+                                <i class="fas fa-users"></i> Created club
+                                {% elif activity.action == 'reported_issue' %}
+                                <i class="fas fa-exclamation-triangle"></i> Reported issue
+                                {% else %}
+                                <i class="fas fa-circle"></i> {{ activity.action }}
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No activity yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Members -->
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-user-friends"></i> Team Members ({{ members|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if members %}
+                    <ul class="list-group list-group-flush">
+                        {% for member in members %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ member.user.username }}</strong>
+                                {% if member.role == 'admin' %}
+                                <span class="badge bg-success">Admin</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Member</span>
+                                {% endif %}
+                                <br><small class="text-muted">{{ member.user.email }}</small>
+                            </div>
+                            {% if is_member and membership.role == 'admin' and member.user_id != current_user.id %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% if member.role != 'admin' %}
+                                    <li>
+                                        <form method="POST" action="{{ url_for('promote_team_member', team_id=team.id, member_id=member.id) }}">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="fas fa-arrow-up"></i> Promote to Admin
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {% endif %}
+                                    <li>
+                                        <form method="POST" action="{{ url_for('remove_team_member', team_id=team.id, member_id=member.id) }}">
+                                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Remove this member?')">
+                                                <i class="fas fa-trash"></i> Remove
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">No members yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Add Members (Admin only) -->
+            {% if is_member and membership.role == 'admin' %}
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-user-plus"></i> Add Members</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_team_member', team_id=team.id) }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">User Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter user email" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="member">Member</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-plus"></i> Add Member
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Leave Team -->
+            {% if is_member %}
+            <div class="card shadow mt-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="fas fa-sign-out-alt"></i> Leave Team</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('leave_team', team_id=team.id) }}">
+                        <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Are you sure you want to leave this team?')">
+                            <i class="fas fa-sign-out-alt"></i> Leave Team
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-item:last-child {
+    border-bottom: none !important;
+}
+</style>
+{% endblock %}
+

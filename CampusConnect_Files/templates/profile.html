@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - CampusConnect+{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header with College Photo Background -->
+<div class="dashboard-header-bg">
+    <div class="container py-5">
+    <!-- Profile Header -->
+    <div class="row mb-5">
+        <div class="col-md-4 text-center">
+            <div class="profile-avatar mb-3">
+                <i class="fas fa-user-circle fa-7x text-primary"></i>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h1 class="display-4">{{ user.username }}</h1>
+            <p class="lead text-muted">{{ user.email }}</p>
+            <span class="badge bg-primary fs-6">{{ user.role|title }}</span>
+            <span class="badge bg-secondary fs-6">Member since {{ user.created_at.strftime('%Y') }}</span>
+        </div>
+    </div>
+
+    <!-- Profile Tabs -->
+    <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">
+                <i class="fas fa-user"></i> Personal Info
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button">
+                <i class="fas fa-history"></i> My Activity
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="profileTabsContent">
+        <!-- Personal Info -->
+        <div class="tab-pane fade show active" id="info">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-id-card"></i> Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user"></i> Username:</strong> {{ user.username }}</p>
+                            <p><strong><i class="fas fa-envelope"></i> Email:</strong> {{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user-tag"></i> Role:</strong> {{ user.role|title }}</p>
+                            <p><strong><i class="fas fa-calendar"></i> Joined:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Activity -->
+        <div class="tab-pane fade" id="activity">
+            <div class="row">
+                <!-- Notices Posted -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5><i class="fas fa-bullhorn"></i> My Notices</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.notices %}
+                            <ul class="list-group list-group-flush">
+                                {% for notice in user.notices %}
+                                <li class="list-group-item">
+                                    <strong>{{ notice.title }}</strong>
+                                    <br><small class="text-muted">{{ notice.created_at.strftime('%Y-%m-%d') }}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No notices posted yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events Organized -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class="fas fa-calendar-alt"></i> My Events</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.events %}
+                            <ul class="list-group list-group-flush">
+                                {% for event in user.events %}
+                                <li class="list-group-item">
+                                    <strong>{{ event.title }}</strong>
+                                    <br><small class="text-muted">{{ event.date.strftime('%Y-%m-%d') }}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No events organized yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clubs -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h5><i class="fas fa-users"></i> My Clubs</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.clubs %}
+                            <ul class="list-group list-group-flush">
+                                {% for club in user.clubs %}
+                                <li class="list-group-item">
+                                    <strong>{{ club.name }}</strong>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No clubs created yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issues Reported -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h5><i class="fas fa-exclamation-circle"></i> Issues Reported</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.issues %}
+                            <ul class="list-group list-group-flush">
+                                {% for issue in user.issues %}
+                                <li class="list-group-item">
+                                    <strong>{{ issue.title }}</strong>
+                                    <span class="badge bg-{{ 'success' if issue.status == 'resolved' else 'warning' }}">{{ issue.status }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No issues reported yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teams -->
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-header bg-purple text-white" style="background-color: #6f42c1;">
+                            <h5><i class="fas fa-users"></i> My Teams</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if user.team_memberships %}
+                            <ul class="list-group list-group-flush">
+                                {% for membership in user.team_memberships %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ membership.team.name }}</strong>
+                                        {% if membership.role == 'admin' %}
+                                        <span class="badge bg-success">Admin</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Member</span>
+                                        {% endif %}
+                                    </div>
+                                    <a href="{{ url_for('team_dashboard', team_id=membership.team.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted">No teams yet. <a href="{{ url_for('teams') }}">Create or join a team</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-pane fade" id="settings">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-cog"></i> Account Settings</h5>
+                <div class="card-body">
+                </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" placeholder="Enter current password">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" placeholder="Enter new password">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<style>
+.profile-avatar {
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.1);
+}
+
+.nav-tabs .nav-link {
+    color: #495057;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-top: 3px solid #0d6efd;
+}
+</style>
+{% endblock %}
+
